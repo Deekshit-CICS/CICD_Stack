@@ -60,17 +60,17 @@
         enabled: yes
         state: started
 
-    - name: Open Artifactory port in firewall
-      firewalld:
-        port: "{{ artifactory_port }}/tcp"
-        state: enabled
-        permanent: yes
-      notify: reload_firewalld
+    # - name: Open Artifactory port in firewall
+    #   firewalld:
+    #     port: "{{ artifactory_port }}/tcp"
+    #     state: enabled
+    #     permanent: yes
+    #   notify: reload_firewalld
 
   handlers:
     - name: restart_artifactory
       systemd:
         name: artifactory
         state: restarted
-    - name: reload_firewalld
-      command: firewall-cmd --reload
+    # - name: reload_firewalld
+    #   command: firewall-cmd --reload
