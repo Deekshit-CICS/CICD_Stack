@@ -1,0 +1,49 @@
+---
+- name: Install Jenkins
+  hosts: jenkins_servers
+  become: yes
+  vars:
+    jenkins_repo_url: "http://pkg.jenkins.io/redhat-stable/jenkins.repo"
+    jenkins_repo_key_url: "http://pkg.jenkins.io/redhat-stable/jenkins.io.key"
+
+  tasks:
+    - name: Ensure required packages are installed
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - java-11-openjdk
+        - java-11-openjdk-devel
+        - wget
+
+    - name: Add Jenkins repository
+      get_url:
+        url: "{{ jenkins_repo_url }}"
+        dest: /etc/yum.repos.d/jenkins.repo
+
+    - name: Import Jenkins repository GPG key
+      rpm_key:
+        state: present
+        key: "{{ jenkins_repo_key_url }}"
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start and enable Jenkins service
+      systemd:
+        name: jenkins
+        enabled: yes
+        state: started
+
+    - name: Open port 8080 for Jenkins
+      firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+      notify: reload_firewalld
+
+  handlers:
+    - name: reload_firewalld
+      command: firewall-cmd --reload
