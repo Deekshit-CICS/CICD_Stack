@@ -20,6 +20,13 @@
         home: "{{ artifactory_home }}"
         shell: /bin/bash
         state: present
+    
+    - name: Ensure required packages are installed
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - wget
 
     - name: Download Artifactory tarball
       get_url:
