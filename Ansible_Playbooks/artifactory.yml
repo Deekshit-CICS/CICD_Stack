@@ -1,0 +1,76 @@
+---
+- name: Install Artifactory
+  hosts: Artifactory
+  become: yes
+  vars:
+    artifactory_version: "7.30.7"
+    artifactory_home: "/opt/artifactory"
+    artifactory_port: 8081
+
+  tasks:
+    - name: Create Artifactory user and group
+      group:
+        name: artifactory
+        state: present
+
+    - name: Create Artifactory user
+      user:
+        name: artifactory
+        group: artifactory
+        home: "{{ artifactory_home }}"
+        shell: /bin/bash
+        state: present
+
+    - name: Download Artifactory tarball
+      get_url:
+        url: "https://bintray.com/jfrog/artifactory/download_file?file_path=jfrog-artifactory-{{ artifactory_version }}.zip"
+        dest: /tmp/artifactory.zip
+        mode: '0644'
+
+    - name: Extract Artifactory
+      unarchive:
+        src: /tmp/artifactory.zip
+        dest: "{{ artifactory_home }}"
+        remote_src: yes
+        creates: "{{ artifactory_home }}/artifactory-{{ artifactory_version }}"
+
+    - name: Set symlink to Artifactory directory
+      file:
+        src: "{{ artifactory_home }}/artifactory-{{ artifactory_version }}"
+        dest: "{{ artifactory_home }}/artifactory"
+        state: link
+
+    - name: Ensure Artifactory user owns the Artifactory directory
+      file:
+        path: "{{ artifactory_home }}/artifactory-{{ artifactory_version }}"
+        state: directory
+        owner: artifactory
+        group: artifactory
+        recurse: yes
+
+    - name: Configure Artifactory service
+      template:
+        src: artifactory.service.j2
+        dest: /etc/systemd/system/artifactory.service
+      notify: restart_artifactory
+
+    - name: Enable and start Artifactory service
+      systemd:
+        name: artifactory
+        enabled: yes
+        state: started
+
+    - name: Open Artifactory port in firewall
+      firewalld:
+        port: "{{ artifactory_port }}/tcp"
+        state: enabled
+        permanent: yes
+      notify: reload_firewalld
+
+  handlers:
+    - name: restart_artifactory
+      systemd:
+        name: artifactory
+        state: restarted
+    - name: reload_firewalld
+      command: firewall-cmd --reload
