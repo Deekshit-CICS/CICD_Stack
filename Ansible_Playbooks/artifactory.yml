@@ -3,7 +3,6 @@
   hosts: artifactory_servers
   become: yes
   vars:
-    artifactory_version: "7.30.7"
     artifactory_home: "/opt/artifactory"
     artifactory_port: 8081
 
@@ -31,25 +30,25 @@
     - name: Download Artifactory tarball
       get_url:
         url: "https://releases.jfrog.io/artifactory/artifactory-pro/org/artifactory/pro/jfrog-artifactory-pro/[RELEASE]/jfrog-artifactory-pro-[RELEASE]-linux.tar.gz?_gl=1*uqzsru*_ga*NDA3OTk5MzcwLjE3MTQ5MTAzOTc.*_ga_SQ1NR9VTFJ*MTcxNjkwOTU1My4yLjEuMTcxNjkwOTg3NS4wLjAuMTIxNzE1OTA4MQ..*_fplc*bEZ5enZDTmVTT1k3WVZwWUhBbyUyRlhucmFFMVBBOCUyQmpFdG1yODlqTERpc3M0ZlVjVzFtNUEyTU53aWtCbHJreWZyN1NudFlJbkZpejliQkE3VTN1NmtWSzkwZk43RjRubENLeEJOU0RtNHcyN3JlSm9iSG5CUmpaOSUyQllXUnlRJTNEJTNE"
-        dest: /tmp/artifactory.zip
+        dest: /tmp/artifactory.tar.gz
         mode: '0644'
 
     - name: Extract Artifactory
       unarchive:
-        src: /tmp/artifactory.zip
+        src: /tmp/artifactory.tar.gz
         dest: "{{ artifactory_home }}"
         remote_src: yes
-        creates: "{{ artifactory_home }}/artifactory-{{ artifactory_version }}"
+        creates: "{{ artifactory_home }}/artifactory"
 
     - name: Set symlink to Artifactory directory
       file:
-        src: "{{ artifactory_home }}/artifactory-{{ artifactory_version }}"
+        src: "{{ artifactory_home }}/artifactory"
         dest: "{{ artifactory_home }}/artifactory"
         state: link
 
     - name: Ensure Artifactory user owns the Artifactory directory
       file:
-        path: "{{ artifactory_home }}/artifactory-{{ artifactory_version }}"
+        path: "{{ artifactory_home }}/artifactory"
         state: directory
         owner: artifactory
         group: artifactory
