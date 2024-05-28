@@ -1,6 +1,6 @@
 ---
 - name: Install Artifactory
-  hosts: Artifactory
+  hosts: artifactory_servers
   become: yes
   vars:
     artifactory_version: "7.30.7"
