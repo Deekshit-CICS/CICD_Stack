@@ -30,7 +30,7 @@
 
     - name: Download Artifactory tarball
       get_url:
-        url: "https://bintray.com/jfrog/artifactory/download_file?file_path=jfrog-artifactory-{{ artifactory_version }}.zip"
+        url: "https://releases.jfrog.io/artifactory/artifactory-pro/org/artifactory/pro/jfrog-artifactory-pro/[RELEASE]/jfrog-artifactory-pro-[RELEASE]-linux.tar.gz?_gl=1*uqzsru*_ga*NDA3OTk5MzcwLjE3MTQ5MTAzOTc.*_ga_SQ1NR9VTFJ*MTcxNjkwOTU1My4yLjEuMTcxNjkwOTg3NS4wLjAuMTIxNzE1OTA4MQ..*_fplc*bEZ5enZDTmVTT1k3WVZwWUhBbyUyRlhucmFFMVBBOCUyQmpFdG1yODlqTERpc3M0ZlVjVzFtNUEyTU53aWtCbHJreWZyN1NudFlJbkZpejliQkE3VTN1NmtWSzkwZk43RjRubENLeEJOU0RtNHcyN3JlSm9iSG5CUmpaOSUyQllXUnlRJTNEJTNE"
         dest: /tmp/artifactory.zip
         mode: '0644'
 
