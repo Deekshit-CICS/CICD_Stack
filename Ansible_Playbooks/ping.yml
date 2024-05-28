@@ -1,0 +1,8 @@
+---
+- name: Ping Artifactory Server
+  hosts: artifactory_servers
+  gather_facts: false
+
+  tasks:
+    - name: Ping Artifactory Ec2 Machine
+      ping:
